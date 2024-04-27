@@ -104,5 +104,73 @@ function removeItemCart(name){
     }
 }
 
+addressInput.addEventListener("input", (event) => {
+   let inputValue = event.target.value;
+   if(inputValue !== ""){
+    addressInput.classList.remove("border-red-500")
+    addressWarn.classList.add("hidden")
+   }
+
+})
+
+checkoutBtn.addEventListener("click", () => {
+    const isOpen = checkRestaurant();
+    if (!isOpen) {
+      Toastify({
+        text: "Ops, restaurante fechado no momento!!",
+        duration: 3000,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "#ef4444",
+        },
+      }).showToast();
+      return;
+    }
+
+    if(cartItems.length === 0) return;  
+    if(addressInput.value === ""){
+        addressWarn.classList.remove("hidden")
+        addressInput.classList.add("border-red-500")
+        return;
+    }
+
+    //Enviando pedido para o restaurante
+    const itens = cartItems.map((item) => {
+      return (
+       ` ${item.name} Quantidade: (${item.quantity}) Preço: R$${item.price} |`
+      )  
+      
+    }).join("")
+
+    const message = encodeURIComponent(itens)
+    const phone = "16992440391"
+
+    window.open(`https://wa.me/${phone}?text=${message} Endereço: ${addressInput.value}`, "_blank")
+    
+    cartItems = [];
+    updateCartModal();
+     
+})
+
+function checkRestaurant(){
+  const data = new Date()
+  const hora = data.getHours()
+  return hora >= 18 && hora < 22
+}
+
+const spanItem = document.getElementById("date-span")
+const isOpen = checkRestaurant()
+
+if(isOpen){
+  spanItem.classList.remove("bg-red-500")
+  spanItem.classList.add("bg-green-600")
+}else{
+  spanItem.classList.remove("bg-green-600")
+  spanItem.classList.add("bg-red-500")
+}
+
 
 
